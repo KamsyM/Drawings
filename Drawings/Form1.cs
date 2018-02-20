@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Nakov.TurtleGraphics;
+using System.Collections;
 
 namespace Drawings
 {
@@ -18,6 +19,10 @@ namespace Drawings
             InitializeComponent();
         }
 
+        private List<Shape> shapes = new List<Shape>();
+
+        private Shape mostRecent;
+
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             //Transform windows coordinates to Turtle coordinates
@@ -26,49 +31,34 @@ namespace Drawings
             string selectedItem = (string)comboBox1.SelectedItem;
             if (selectedItem == "Draw Triangle") //We will add more options later
             {
-                DrawTriangle(turtleX, turtleY, 50);
+                var trg = new EquilateralTriangle(turtleX, turtleY, 50);
+                shapes.Add(trg);
+                mostRecent = trg;
             }
 
             if (selectedItem == "Draw Rectangle")
             {
-                DrawRectangle(turtleX, turtleY, 50,100);
+                var rec = new Rectangle(turtleX, turtleY, 100, 50);
+                shapes.Add(rec);
+                mostRecent = rec;
             }
-        }
-
-        private static void DrawTriangle(float xOrigin, float yOrigin, float sideLength)
-        {
-            Turtle.ShowTurtle = false;
-            Turtle.PenSize = 2;
-            Turtle.Angle = 0;  //Always start from North
-            Turtle.X = xOrigin;
-            Turtle.Y = yOrigin;
-            Turtle.Rotate(30);
-            for (int i = 0; i < 3; i++)
+            if (selectedItem == "Move Shape")
             {
-                Turtle.Forward(sideLength);
-                Turtle.Rotate(120);
+                mostRecent.MoveTo(turtleX, turtleY);
             }
-
-
+            Turtle.Dispose();
+            DrawAll();
         }
 
-        private static void DrawRectangle(float xOrigin, float yOrigin, float height, float width)
+        public void DrawAll()
         {
-            Turtle.ShowTurtle = false;
-            Turtle.PenSize = 2;
-            Turtle.Angle = 0;  //Always start from North
-            Turtle.X = xOrigin;
-            Turtle.Y = yOrigin;
-            
-            for (int i = 0; i < 2; i++)
+            Turtle.Dispose();
+            foreach (var shape in shapes)
             {
-                Turtle.Forward(height);
-                Turtle.Rotate(90);
-                Turtle.Forward(width);
-                Turtle.Rotate(90);
+                shape.Draw();
             }
-
-
         }
+
+
     }
 }
